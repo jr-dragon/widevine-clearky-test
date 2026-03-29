@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widevine DRM Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff; }
+    .subtitle { color: #888; margin-bottom: 2rem; font-size: 0.9rem; }
+    .badge { display: inline-block; background: #1a3a2a; color: #4ade80; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem; }
+
+    /* Player section */
+    .player-section { margin-bottom: 2rem; }
+    .player-wrapper { background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; position: relative; }
+    video { width: 100%; height: 100%; }
+    .player-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: #555; font-size: 0.9rem; }
+
+    /* Video list */
+    .section-title { font-size: 1.1rem; margin-bottom: 1rem; color: #ccc; }
+    .video-list { display: grid; gap: 0.75rem; margin-bottom: 2rem; }
+    .video-item { display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+    .video-item:hover { background: #252525; }
+    .video-item .name { font-size: 0.95rem; }
+    .video-item .play-btn { background: #3b82f6; color: #fff; border: none; padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .video-item .play-btn:hover { background: #2563eb; }
+    .empty-state { text-align: center; color: #555; padding: 2rem; background: #1a1a1a; border-radius: 6px; }
+
+    /* Upload section */
+    .upload-section { background: #1a1a1a; border-radius: 8px; padding: 1.5rem; }
+    .upload-area { border: 2px dashed #333; border-radius: 6px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+    .upload-area:hover, .upload-area.dragover { border-color: #3b82f6; }
+    .upload-area input { display: none; }
+    .upload-area p { color: #888; font-size: 0.9rem; }
+    .upload-progress { margin-top: 1rem; display: none; }
+    .progress-bar { background: #333; border-radius: 4px; height: 6px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3b82f6; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 0.8rem; color: #888; margin-top: 0.5rem; }
+
+    /* DRM info */
+    .drm-info { margin-top: 2rem; background: #1a1a1a; border-radius: 8px; padding: 1rem 1.5rem; font-size: 0.8rem; color: #666; }
+    .drm-info code { color: #888; background: #252525; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Widevine DRM Demo <span class="badge">ClearKey</span></h1>
+    <p class="subtitle">使用 W3C EME ClearKey 加密的 DASH 串流播放示範</p>
+
+    <div class="player-section">
+      <div class="player-wrapper">
+        <video id="player" controls></video>
+        <div class="player-placeholder" id="placeholder">選擇一個影片開始播放</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">影片列表</h2>
+    <div class="video-list" id="videoList">
+      <div class="empty-state">尚無加密影片，請上傳一個影片開始</div>
+    </div>
+
+    <h2 class="section-title">上傳影片</h2>
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <p>點擊或拖曳 MP4 影片到這裡進行加密</p>
+        <input type="file" id="fileInput" accept="video/mp4,.mp4">
+      </div>
+      <div class="upload-progress" id="uploadProgress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-text" id="progressText">上傳中...</p>
+      </div>
+    </div>
+
+    <div class="drm-info">
+      <strong>運作原理：</strong>影片透過 <code>Shaka Packager</code> 以 CENC (AES-128-CTR) 加密並打包為 DASH 格式。
+      瀏覽器使用 <code>EME ClearKey</code> 向 License Server 取得解密金鑰後播放。
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/shaka-player@4/dist/shaka-player.compiled.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
